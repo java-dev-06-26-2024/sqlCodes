@@ -555,6 +555,38 @@ group by customers.id having order_count < 1;
  
  select * from people;
  
+ -- Procedures 
+ 
+-- A stored Procedure is a prepared SQl statement that can save the sql code, we can reuse the code 
+-- again and again. 
+
+
+DELIMITER //
+CREATE PROCEDURE get_all_orders()
+BEGIN
+    SELECT * FROM orders;
+END //
+DELIMITER ;
+
+call get_all_orders();
+
+delimiter // 
+create procedure total_orders_by_each_person()
+begin
+
+select customers.*, count(orders.id) as order_count, sum(total) as total_orders_cost 
+from customers left outer join orders 
+on orders.customer_id = customers.id
+group by customers.id order by order_count desc, total_orders_cost desc;
+
+end //
+delimiter ;
+
+call total_orders_by_each_person();
+
+ CREATE FUNCTION hello (s CHAR(20))
+ RETURNS CHAR(50) DETERMINISTIC
+ RETURN CONCAT('Hello, ',s,'!');
  
  -- ACID
 -- Transactions, the grouping of SQL statements so that they all succeed or fail together, requires
