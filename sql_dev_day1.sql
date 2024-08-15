@@ -389,13 +389,205 @@ max(price) as max_price,
 min(price) as min_price
 from product;
 
---  Order table -> reference to member 
+--  Order table -> reference to member table
 --  stats of Order 
 --  find the last order 
 --  find the biggest order 
 --  find the smallest order 
 -- sort the  orders based on date
 -- sort the orders based on price.
--- provide latest 5 orders. 
+-- provide latest 5 orders.
 
+
+-- Multiplicity
+
+-- 1:1 -> one to one 
+-- 1:n or n:1  -> one to many or many to one. 
+-- n: n -> many to many 
+
+-- join
+
+-- INNER JOIN
+-- LEFT OUTER JOIN
+-- RIGHT OUTER JOIN
+-- FULL JOIN
+-- SELF JOIN
+
+
+create table customers(
+id int primary key, 
+fullname varchar(30) not null, 
+email varchar(35) not null unique
+);
+
+create table orders(
+id int primary key,
+total double(4,2) not null, 
+invoiceNo varchar(20) unique, 
+orderDate date, 
+customer_id int,
+foreign key(customer_id) references customers(id)
+);
+ 
+ insert into customers(id, fullname, email)
+ values(1, 'abu', 'abu@gmail.com'),
+ (2, 'syed', 'syed@gmail.com'),
+ (3, 'bhavani', 'bhavani@gmail.com'),
+ (4, 'joseph', 'joseph@g,mail.com'),
+ (5, 'Amir', 'amir@gmail.com'),
+ (6, 'Fuhndzom', 'fuhndzom@gmail.com'),
+ (7, 'nazi', 'nazi@gmail.com'),
+ (8, 'john', 'john@gmail.com'),
+ (9, 'joy', 'joy@gmail.com'),
+ (10, 'Amitab', 'amitab@gmail.com'),
+ (11, 'ashvaria', 'ashvaria@gmail.com'),
+ (12, 'sharuk', 'sharuk@gmail.com'),
+ (13, 'Bruce will', 'bruce@gmail.com');
+ 
+  insert into customers(id, fullname, email)
+ values(14, 'syed abu', 'syedabu@gmail.com'),
+ (15, 'syed sharuk', 'syedsharuk@gmail.com'),
+ (16, 'rose', 'rose@gmail.com');
+ 
+ select * from customers;
+ 
+ insert into orders (id, total, invoiceNo, orderDate, customer_id)
+ values(1, 20.15, 'ANB123', '2024-03-23', 2),
+ (2, 30.99, 'BTR456', '2024-07-15', '1'),
+  (3, 40.99, 'ATR456', '2024-07-15', '4'),
+   (4, 10.99, 'FTR456', '2024-05-22', '5'),
+    (5, 35.25, 'GTR456', '2024-06-18', '3'),
+     (6, 82.99, 'TTR456', '2024-08-01', '6'),
+      (7, 61.55, 'BTR556', '2024-07-11', '9'),
+       (8, 22.99, 'BTR656', '2024-06-29', '12'),
+       (9, 99.99, 'BTR756', '2024-05-17', '11'),
+       (10, 78.56, 'BTR956', '2024-07-15', '10'),
+       (11, 18.99, 'BTS456', '2024-05-15', '7'),
+       (12, 57.99, 'BTE456', '2024-05-15', '8'),
+       (13, 47.15, 'BTQ456', '2024-06-27', '10'),
+       (14, 63.99, 'BTP456', '2024-07-08', '10'),
+       (15, 74.75, 'BTW456', '2024-05-11', '13'),
+       (16, 97.99, 'BTZ456', '2024-07-22', '7');
+ 
+ select * from orders;
+ 
+  insert into orders (id, total, invoiceNo, orderDate)
+ values(17, 18.15, 'KGF146', '2024-03-23'),
+ (18, 43.45, 'TDR256', '2024-06-15'),
+  (19, 61.32, 'FKG765', '2024-08-15'),
+   (20, 9.99, 'PKT126', '2024-04-22');
+   
+   -- get the order details along with customers details 
+ 
+select * from  orders  inner join customers on orders.customer_id = customers.id;
+
+select orders.*, customers.* from  orders  inner join customers on orders.customer_id = customers.id;
+
+select * from  orders o inner join customers c on o.customer_id = c.id;
+
+select o.*, c.* from  orders o inner join customers c on o.customer_id = c.id;
+
+ -- order date, invoiceNo, customer id, fullname, email, total
+ 
+ select orderDate, invoiceNo, customer_id, fullname, email, total from orders
+ inner join customers on orders.customer_id = customers.id order by total asc;
+ 
+ -- get all the odrers which are online and in person 
+ 
+ select * from orders left outer join customers on  orders.customer_id = customers.id;
+ 
+ 
+-- find the all the person with orders and without orders 
+
+ select * from orders right outer join customers on  orders.customer_id = customers.id;
+ 
+-- group by 
+-- groups are rows that have same values inot summary rows like sum/ avg/ count
+-- group by is used to get the summary details.
+
+-- having - this will be applied after joining
+-- where  - this will be applied before joining the tables 
+
+
+-- find the total no of orders places by each person.
+
+select customers.*, count(orders.id) as order_count, sum(total) as total_orders_cost 
+from customers left outer join orders 
+on orders.customer_id = customers.id
+group by customers.id order by order_count desc, total_orders_cost desc  limit 3;
+
+
+select customers.*, count(orders.id) as order_count, sum(total) as total_orders_cost 
+from customers left outer join orders 
+on orders.customer_id = customers.id
+group by customers.id having order_count < 1;
+
+
+-- find people and orders between 2024-07-01 to 2024- 08-01
+ select * from orders right outer join customers on  orders.customer_id = customers.id 
+ where orderDate between '2024-07-01' and '2024-08-01';
+ 
+ 
+ -- auto_increment 
+ 
+ create table people (
+ id int primary key auto_increment,
+ fullname varchar(30) not null, 
+ email varchar(35) not null unique
+ );
+ 
+ alter table people auto_increment = 2000;
+ 
+  insert into people( fullname, email)
+ values( 'abu', 'abu@gmail.com'),
+ ('syed', 'syed@gmail.com'),
+ ( 'bhavani', 'bhavani@gmail.com'),
+ ( 'joseph', 'joseph@g,mail.com'),
+ ( 'Amir', 'amir@gmail.com'),
+ ( 'Fuhndzom', 'fuhndzom@gmail.com'),
+ ( 'nazi', 'nazi@gmail.com'),
+ ( 'john', 'john@gmail.com'),
+ ( 'joy', 'joy@gmail.com'),
+ ( 'Amitab', 'amitab@gmail.com'),
+ ( 'ashvaria', 'ashvaria@gmail.com'),
+ ('sharuk', 'sharuk@gmail.com'),
+ ('Bruce will', 'bruce@gmail.com');
+ 
+ select * from people;
+ 
+ 
+ -- ACID
+-- Transactions, the grouping of SQL statements so that they all succeed or fail together, requires
+-- the adherence to 4 properties. These properties are remembered by the name ACID and are
+-- common database terms.
+-- • Atomicity – A transaction must fully succeed, and all changes are made or be fully rolled back
+-- and no changes are made to the database.
+-- • Consistency – Relationships in the database must be valid when a transaction finishes. You can
+-- not have “orphaned reference” in FKs for instance. E.g. if I delete and address from the database
+-- I have to delete all references to that address in the users table for the transaction to complete.
+-- • Isolation – Transaction must run independently of each other. I.e. no transaction should be
+-- dependent of another transaction’s completion in order to complete. How isolated transactions
+-- are from each other is set by the database’s Transaction Level and will be determined based on
+-- the sensitivity of data and the need for rapid, multithreaded transaction processing.
+-- • Durability – Transactions when they commit should persist through catastrophic failure. E.g. a
+-- system crash or power outage.
+
+-- Data Normalization:
+-- • Normalization is a tiered structure for designing databases to reduce redundancy of data
+-- storage. This increases efficiency in the database.
+-- • Each level of normalization is called a “normal form”. If no attempt at normalization is made, the
+-- database is said to be in 0 Normal Form.
+-- • There are 3 generally used normal forms in the real world. There are more beyond that that
+-- have been defined; however, these are difficult to implement and rarely have much impact in a
+-- real-world scenario and are therefore more academic.
+-- • 1st Normal Form – Atomic Data (data values stored should be broken down in the smallest
+-- amount of meaningful data possible) and Primary Keys.
+-- • 2nd Normal Form – 1st NF plus no partial dependencies. You can achieve this by having single
+-- column PKs. A partial dependency is a value that can be determined by only accessing one
+-- column in the PKs information.
+-- • 3rd Normal Form – 2nd NF plus no transitive dependencies. A transitive dependency is when one
+-- value can be fully determined by another value in the same record that is not the primary. If
+-- that is the case then the value should be moved to another table the determinating value should
+-- be made a foreign key to that other table.
+ 
  
